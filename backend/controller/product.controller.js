@@ -6,7 +6,6 @@ export const addProduct = async (req, res) => {
   try {
     const { name, price, description, sizes, category, subCategory } = req.body;
     const photo = req.file;
-
     if (!name || !price || !description || !sizes || !photo) {
       return res.status(400).json({
         success: false,
@@ -35,20 +34,10 @@ export const addProduct = async (req, res) => {
     }
 
     let productPic;
-    if (photo && photo.path) {
-      // ✅ Check if path exists
+    if (photo) {
       productPic = await uploadMedia(photo.path);
       await fs.unlink(photo.path);
-    } else if (photo) {
-      // ✅ Handle the case where path is undefined (Vercel production)
-      console.log("File path is undefined - production environment detected");
-      return res.status(400).json({
-        success: false,
-        message:
-          "File upload not supported in current environment. Please use memory storage.",
-      });
     }
-
     const product = await Product.create({
       name,
       price,
